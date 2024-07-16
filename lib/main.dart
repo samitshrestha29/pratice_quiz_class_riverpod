@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quiz_marcus_ng/riverpod_api__pratice/views/quiz.page.dart';
+import 'package:quiz_marcus_ng/Riverpod_pratice_quiz/quiz_page_pratice.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));

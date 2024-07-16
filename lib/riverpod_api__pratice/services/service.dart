@@ -4,20 +4,20 @@ import 'dart:convert';
 
 import '../models/question_model.dart';
 
-final quizServiceProvider = Provider((ref) => QuizService());
-
 class QuizService {
   Future<List<Question>> fetchQuestions() async {
     final response = await http.get(Uri.parse(
         'https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple'));
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body) as Map<String, dynamic>;
-      final questions =
+      final data = json.decode(response.body);
+      final questionText =
           (data['results'] as List).map((e) => Question.fromJson(e)).toList();
-      return questions;
+      return questionText;
     } else {
       throw Exception('Failed to load questions');
     }
   }
 }
+
+final quizServiceProvider = Provider((ref) => QuizService());
