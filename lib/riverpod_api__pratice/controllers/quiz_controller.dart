@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quiz_marcus_ng/riverpod_api__pratice/models/quiz.state.dart';
+import 'package:quiz_marcus_ng/riverpod_api__pratice/models/quiz_state.dart';
 import 'package:quiz_marcus_ng/riverpod_api__pratice/services/service.dart';
 
 class QuizController extends StateNotifier<QuizState> {

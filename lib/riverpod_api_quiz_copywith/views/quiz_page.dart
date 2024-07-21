@@ -1,57 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../controllers/quiz_controller.dart';
+import 'package:quiz_marcus_ng/riverpod_api_quiz_copywith/controllers/quiz_controller.dart';
 
-class QuizPageCopyWithRiverpod extends ConsumerWidget {
-  const QuizPageCopyWithRiverpod({super.key});
+class QuizCopyWith extends ConsumerWidget {
+  const QuizCopyWith({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final quizState = ref.watch(quizControllerProvider);
+    final quizController = ref.read(quizControllerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(quizState.quizFinished ? 'Quiz Complete' : 'Quiz'),
+        title: const Text('Quiz'),
       ),
-      body: quizState.questions.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : quizState.quizFinished
-              ? Center(
+      body: quizState.questions.isNotEmpty
+          ? quizState.quizFinished
+              ? Column(
+                  children: [
+                    Center(
+                      child: Text(
+                        '${quizState.score}',
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        quizController.restart();
+                      },
+                      child: const Text('Restart Quiz'),
+                    ),
+                  ],
+                )
+              : Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Quiz completed, your score is ${quizState.score}'),
-                      ElevatedButton(
-                        onPressed: () {
-                          ref.read(quizControllerProvider.notifier).resetQuiz();
-                        },
-                        child: const Text('Restart Quiz'),
+                      Text(
+                        quizState
+                            .questions[quizState.currentQuestionIndex].question,
                       ),
+                      ...quizState.questions[quizState.currentQuestionIndex]
+                          .allAnswers()
+                          .map(
+                            (e) => ElevatedButton(
+                              onPressed: () {
+                                quizController.setAnswer(e);
+                              },
+                              child: Text(e),
+                            ),
+                          ),
                     ],
                   ),
                 )
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        quizState.questions[quizState.currentIndex].question,
-                        style: const TextStyle(fontSize: 20.0),
-                      ),
-                      const SizedBox(height: 20.0),
-                      ...quizState.shuffledAnswers
-                          .map((answer) => ElevatedButton(
-                                onPressed: () {
-                                  ref
-                                      .read(quizControllerProvider.notifier)
-                                      .answerQuestion(answer);
-                                },
-                                child: Text(answer),
-                              )),
-                    ],
-                  ),
-                ),
+          : const Center(
+              child: CircularProgressIndicator(),
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          quizController.nextQuestion();
+        },
+        child: const Icon(Icons.arrow_forward),
+      ),
     );
   }
 }

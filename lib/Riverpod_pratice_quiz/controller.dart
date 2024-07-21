@@ -1,68 +1,61 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:quiz_marcus_ng/riverpod_api__pratice/models/quiz.state.dart';
-import 'package:quiz_marcus_ng/riverpod_api__pratice/services/service.dart';
+import 'package:quiz_marcus_ng/Riverpod_pratice_quiz/models/quiz_state.dart';
+import 'package:quiz_marcus_ng/Riverpod_pratice_quiz/services/service.dart';
 
 class QuizController extends StateNotifier<QuizState> {
-  final QuizService quizService;
-
-  QuizController(this.quizService)
-      : super(QuizState(
-          questions: [],
-        )) {
-    fetchQuestion();
+  Service quizservice;
+  QuizController(this.quizservice) : super(QuizState(questions: [])) {
+    fetchquestion();
   }
-
-  Future<void> fetchQuestion() async {
+  Future<void> fetchquestion() async {
     try {
-      final questions = await quizService.fetchQuestions();
-      state = QuizState(questions: questions, score: state.score);
+      final questions = await quizservice.getQuestions();
+      state = QuizState(questions: questions);
     } catch (e) {
       state = QuizState(
-        questions: [],
-        errorMessage: 'Failed to load questions: ${e.toString()}',
-      );
+          questions: [],
+          errorMessage: 'FAILED TO LOAD QUESTION"${e.toString()}');
     }
   }
 
-  void nextQuestion() {
-    if (state.currentQuestionIndex < state.questions.length - 1) {
+  nextQuestion() {
+    if (state.currentIndex < state.questions.length - 1) {
       state = QuizState(
         questions: state.questions,
-        currentQuestionIndex: state.currentQuestionIndex + 1,
         score: state.score,
+        currentIndex: state.currentIndex + 1,
+        quizFinished: false,
       );
     } else {
       state = QuizState(
         questions: state.questions,
-        currentQuestionIndex: state.currentQuestionIndex,
-        quizFinished: true,
         score: state.score,
+        currentIndex: state.currentIndex,
+        quizFinished: true,
       );
     }
   }
 
-  void setAnswer(String userAnswer) {
-    if (state.questions[state.currentQuestionIndex].correctAnswer ==
-        userAnswer) {
+  setAnswer(String userAnswer) {
+    if (state.questions[state.currentIndex].correctAnswer == userAnswer) {
       state = QuizState(
         questions: state.questions,
-        currentQuestionIndex: state.currentQuestionIndex + 1,
         score: state.score + 1,
+        currentIndex: state.currentIndex + 1,
       );
+    } else {
+      nextQuestion();
     }
-    nextQuestion();
   }
 
   restart() {
     state = QuizState(
-        questions: state.questions,
-        score: 0,
-        quizFinished: false,
-        currentQuestionIndex: 0);
+      questions: state.questions,
+    );
   }
 }
 
-final quizcontrollerProvider =
+final quizControllerProvider =
     StateNotifierProvider<QuizController, QuizState>((ref) {
-  return QuizController(ref.read(quizServiceProvider));
+  return QuizController(ref.read(serviceProvider));
 });

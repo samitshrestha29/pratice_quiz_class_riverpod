@@ -48,6 +48,14 @@ class _MyHomePageState extends State<MyHomePage> {
     shuffleAnswer.shuffle(Random());
   }
 
+  _restart() {
+    setState(() {
+      currentIndex = 0;
+      score = 0;
+      quizFinished = false;
+    });
+  }
+
   nextQuestion() {
     setState(() {
       currentIndex++;
@@ -77,7 +85,17 @@ class _MyHomePageState extends State<MyHomePage> {
         body: questions.isNotEmpty
             ? quizFinished
                 ? Center(
-                    child: Text('Quiz completed your score is $score'),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Quiz completed your score is $score'),
+                        ElevatedButton(
+                            onPressed: () {
+                              _restart();
+                            },
+                            child: const Text("Restart"))
+                      ],
+                    ),
                   )
                 : Center(
                     child: Column(

@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import '../models/question_model.dart';
 
 class QuizService {
@@ -11,9 +10,9 @@ class QuizService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final questionText =
+      final questions =
           (data['results'] as List).map((e) => Question.fromJson(e)).toList();
-      return questionText;
+      return questions;
     } else {
       throw Exception('Failed to load questions');
     }

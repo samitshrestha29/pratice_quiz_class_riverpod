@@ -1,19 +1,23 @@
-import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../models/question_model.dart';
 
 class QuizService {
   Future<List<Question>> fetchQuestions() async {
     final response = await http.get(Uri.parse(
-        "https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple"));
+        'https://opentdb.com/api.php?amount=10&category=9&difficulty=medium&type=multiple'));
 
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      return (data['results'] as List)
-          .map((e) => Question.fromJson(e))
-          .toList();
+      final data = json.decode(response.body);
+      final questionList =
+          (data['results'] as List).map((e) => Question.fromJson(e)).toList();
+      return questionList;
     } else {
       throw Exception('Failed to load questions');
     }
   }
 }
+
+final quizServiceProvider = Provider((ref) => QuizService());
